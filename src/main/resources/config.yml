@@ -1,0 +1,33 @@
+# StatusPlugin made by Fynnyx
+
+default:
+  # Enable if the player should get always a default status when the player joins the server
+  use-default-on-join: false
+  #Set the default status
+  default-status: ''
+# Define the statuses. The root Element is the selection in the command.
+# The color is defined by the default minecraft colors.
+statuses:
+  afk:
+    prefix: AFK
+    color: 8
+
+# To color the text use the & symbol
+# You can use the following placeholders:
+# %username% - The username of the player
+# %status% - The status of the player
+# %luckperms% - The luckperms group of the player
+
+# Enable the tablist from this plugin. (Luckperms compatible)
+show-in-tablist: true
+tablist-format: '&7[%status% &r%username% - &r%luckperms%&7]'
+
+# Enable the chat format from this plugin. (Luckperms compatible)
+# %message% - display the message
+show-in-chat: true
+chat-format: '&7[%status% &r%username% - &r%luckperms%&7] &r%message%'
+
+# Enable the join message from this plugin. (Luckperms compatible)
+show-join-leave-message: true
+join-message-format: '&7[%status% &r%username% - &r%luckperms%&7] &ejoined the server'
+leave-message-format: '&7[%status% &r%username% - &r%luckperms%&7] &eleft the server'
