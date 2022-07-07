@@ -17,7 +17,6 @@ public class Chat implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        System.out.println(config.getBoolean("show-in-chat"));
         String message = event.getMessage();
         Player player = event.getPlayer();
         try {
@@ -38,7 +37,7 @@ public class Chat implements Listener {
                 event.setFormat(format);
             }
         } catch (NullPointerException e) {
-            System.out.println(e.getStackTrace());
+            e.printStackTrace();
         }
 
     }
