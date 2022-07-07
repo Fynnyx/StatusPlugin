@@ -1,7 +1,0 @@
-ch/fynnyx/statusplugin/Statusplugin.class
-ch/fynnyx/statusplugin/commands/StatusTabCompletion.class
-ch/fynnyx/statusplugin/utils/StatusPlayerConfigFile.class
-ch/fynnyx/statusplugin/listeners/Quit.class
-ch/fynnyx/statusplugin/commands/StatusCommand.class
-ch/fynnyx/statusplugin/listeners/Chat.class
-ch/fynnyx/statusplugin/listeners/Join.class
