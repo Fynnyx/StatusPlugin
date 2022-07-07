@@ -6,6 +6,8 @@ import ch.fynnyx.statusplugin.listeners.Chat;
 import ch.fynnyx.statusplugin.listeners.Join;
 import ch.fynnyx.statusplugin.listeners.Quit;
 import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,6 +23,7 @@ public final class Statusplugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        registerBStats(this);
         setupConfigFile();
         registerListeners();
 
@@ -47,5 +50,12 @@ public final class Statusplugin extends JavaPlugin {
         manager.registerEvents(new Chat(this.config), this);
         manager.registerEvents(new Join(this.config), this);
         manager.registerEvents(new Quit(this.config), this);
+    }
+
+    private void registerBStats(JavaPlugin plugin) {
+        int pluginId = 15697;
+        Metrics metrics = new Metrics(plugin, pluginId);
+
+        metrics.addCustomChart(new SimplePie("chart_id", () -> "My value"));
     }
 }
