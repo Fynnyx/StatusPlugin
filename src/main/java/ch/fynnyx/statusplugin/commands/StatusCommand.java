@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class StatusCommand implements CommandExecutor {
     static FileConfiguration config;
@@ -16,7 +17,7 @@ public class StatusCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "You must be a player to use this command!");
             return true;
@@ -38,9 +39,7 @@ public class StatusCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Status not found!");
             return true;
         }
-        StatusPlayerConfigFile.getConfig().set("statuses." + player.getUniqueId(), args[0]);
-        StatusPlayerConfigFile.saveConfig();
-
+        savePlayerStatus(player, args[0]);
         setStatus(player);
 
         player.sendMessage(ChatColor.GOLD + "Your status has been set to §" + color + prefix);
@@ -49,19 +48,36 @@ public class StatusCommand implements CommandExecutor {
     }
 
     public static void setStatus(Player player) {
-        if (! (player instanceof Player)) {
-            player.sendMessage(ChatColor.RED + "You must be a player to use this command!");
+        try {
+            if (player == null) {
+                player.sendMessage(ChatColor.RED + "You must be a player to use this command!");
+            }
+            String status = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
+            String color = config.getString("statuses." + status + ".color");
+            String prefix = config.getString("statuses." + status + ".prefix");
+            if (color == null || prefix == null) {
+                status = config.getString("default.default-status");
+                color = config.getString("statuses." + status + ".color");
+                prefix = config.getString("statuses." + status + ".prefix");
+                if (status.isEmpty()) {
+                    color = "";
+                    prefix = "";
+                } else if (color == null || prefix == null) {
+                    color = "";
+                    prefix = "";
+                }
+                savePlayerStatus(player, status);
+            }
+            if (config.getBoolean("show-in-tablist")) {
+                player.setPlayerListName(ChatColor.GRAY + "[§" + color + prefix + ChatColor.GRAY + "] " + ChatColor.WHITE + player.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        String status = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
-        String color = config.getString("statuses." + status + ".color");
-        String prefix = config.getString("statuses." + status + ".prefix");
-        if (color == null || prefix == null) {
-            player.sendMessage(ChatColor.RED + "Status not found!");
-            color = "";
-            prefix = "";
-        }
-        if(config.getBoolean("show-in-tablist")) {
-            player.setPlayerListName(ChatColor.GRAY + "[§" + color + prefix + ChatColor.GRAY + "] " + ChatColor.WHITE + player.getName());
-        }
+    }
+
+    private static void savePlayerStatus(Player player, String status) {
+        StatusPlayerConfigFile.getConfig().set("statuses." + player.getUniqueId(), status);
+        StatusPlayerConfigFile.saveConfig();
     }
 }

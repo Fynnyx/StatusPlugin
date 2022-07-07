@@ -1,0 +1,14 @@
+name: Statusplugin
+version: '1.2.0'
+main: ch.fynnyx.statusplugin.Statusplugin
+api-version: 1.19
+authors: [ Fynnyx ]
+description: Define Statuses and display them in the Tab and in the Chat.
+
+commands:
+  status:
+    description: "Set your status!"
+    usage: /status <status>
+    aliases:
+      - st
+    permission: status.setstatus
