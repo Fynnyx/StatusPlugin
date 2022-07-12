@@ -11,12 +11,17 @@ statuses:
   afk:
     prefix: AFK
     color: 8
+#  Create a list of statuses. The root Element is the selection in the command.
+#  For example ... an so on
+# rp:
+#   prefix: RP
+#   color: b
 
 # To color the text use the & symbol
 # You can use the following placeholders:
 # %username% - The username of the player
 # %status% - The status of the player
-# %luckperms% - The luckperms group of the player
+# %luckperms% - The luckperms prefix of the player
 
 # Enable the tablist from this plugin. (Luckperms compatible)
 show-in-tablist: true

@@ -2,8 +2,10 @@ name: Statusplugin
 version: '${project.version}'
 main: ch.fynnyx.statusplugin.Statusplugin
 api-version: 1.19
-authors: [ Fynnyx ]
+authors: [ Fynnyx ] 
 description: Define Statuses and display them in the Tab and in the Chat.
+depend:
+  - LuckPerms
 
 commands:
   status:
@@ -12,3 +14,11 @@ commands:
     aliases:
       - st
     permission: status.setstatus
+
+permissions:
+  status.setstatus:
+    description: "Set your status!"
+    default: true
+  status.setother:
+    description: "Set other players status!"
+    default: false

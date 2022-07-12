@@ -2,6 +2,7 @@ package ch.fynnyx.statusplugin.listeners;
 
 import ch.fynnyx.statusplugin.commands.StatusCommand;
 import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import net.luckperms.api.LuckPerms;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -11,9 +12,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class Join implements Listener {
     FileConfiguration config;
+    LuckPerms luckPerms;
 
-    public Join(FileConfiguration config) {
+    public Join(FileConfiguration config, LuckPerms luckPerms) {
         this.config = config;
+        this.luckPerms = luckPerms;
     }
 
     @EventHandler
@@ -34,9 +37,15 @@ public class Join implements Listener {
                     prefix = "";
                 }
                 String format = config.getString("join-message-format");
+
                 format = format.replace("%status%", "§" + color + prefix)
-                        .replace("%username%", player.getName())
-                        .replace("%luckperms%", "LUCKPERMS");
+                        .replace("%username%", player.getName());
+
+                if (!(luckPerms == null || luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix() == null)) {
+                    format = format.replace("%luckperms%", luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix());
+                } else {
+                    format = format.replace("%luckperms%", "LUCKPERMS");
+                }
                 format = ChatColor.translateAlternateColorCodes('&', format);
                 event.setJoinMessage(format);
             }

@@ -1,6 +1,7 @@
 package ch.fynnyx.statusplugin.listeners;
 
 import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import net.luckperms.api.LuckPerms;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -11,9 +12,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class Quit implements Listener {
     FileConfiguration config;
+    LuckPerms luckPerms;
 
-    public Quit(FileConfiguration config) {
+    public Quit(FileConfiguration config, LuckPerms luckPerms) {
         this.config = config;
+        this.luckPerms = luckPerms;
     }
 
     @EventHandler
@@ -30,9 +33,12 @@ public class Quit implements Listener {
                 }
                 String format = config.getString("leave-message-format");
                 format = format.replace("%status%", "§" + color + prefix)
-                        .replace("%username%", player.getName())
-                        .replace("%luckperms%", "LUCKPERMS");
-                format = ChatColor.translateAlternateColorCodes('&', format);
+                        .replace("%username%", player.getName());
+                if (!(luckPerms == null || luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix() == null)) {
+                    format = format.replace("%luckperms%", luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix());
+                } else {
+                    format = format.replace("%luckperms%", "LUCKPERMS");
+                }                format = ChatColor.translateAlternateColorCodes('&', format);
                 event.setQuitMessage(format);
             }
         } catch (NullPointerException e) {
