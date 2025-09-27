@@ -1,7 +1,6 @@
 package ch.fynnyx.statusplugin;
 
 import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,6 +13,8 @@ import ch.fynnyx.statusplugin.commands.StatusTabCompletion;
 import ch.fynnyx.statusplugin.listeners.Chat;
 import ch.fynnyx.statusplugin.listeners.Join;
 import ch.fynnyx.statusplugin.listeners.Quit;
+import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
+import ch.fynnyx.statusplugin.manager.StatusManager;
 import ch.fynnyx.statusplugin.placeholder.PlaceholderStatusExpansion;
 import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
 import net.luckperms.api.LuckPerms;
@@ -21,31 +22,37 @@ import net.luckperms.api.LuckPermsProvider;
 
 public final class Statusplugin extends JavaPlugin {
 
-    FileConfiguration config;
-    LuckPerms luckPerms;
+    private FileConfiguration config;
+    private LuckPerms luckPerms;
+    private StatusManager statusManager;
+    private PlayerStatusManager playerStatusManager;
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         registerBStats(this);
         setupConfigFile();
         setupLuckPerms();
 
+        // Init managers
+        this.statusManager = new StatusManager();
+        statusManager.loadStatuses(config);
+
+        this.playerStatusManager = new PlayerStatusManager(config, luckPerms, statusManager);
+
         registerCommands();
         registerListeners();
-
-        getLogger().info(ChatColor.GOLD + "Statusplugin" + ChatColor.GREEN + " has been enabled!");
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderStatusExpansion(this.config).register();
             getLogger().info(ChatColor.GOLD + "PlaceholderAPI" + ChatColor.GREEN + " has been hooked!");
         }
+
+        getLogger().info(ChatColor.GOLD + "Statusplugin" + ChatColor.GREEN + " has been enabled!");
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
-        getLogger().info(ChatColor.GOLD + "Statusplugin" + ChatColor.GREEN + " has been disabled!");
+        getLogger().info(ChatColor.GOLD + "Statusplugin" + ChatColor.RED + " has been disabled!");
     }
 
     private void setupConfigFile() {
@@ -60,23 +67,23 @@ public final class Statusplugin extends JavaPlugin {
     }
 
     private void registerCommands() {
-        getCommand("status").setExecutor(new StatusCommand(this.config, this.luckPerms));
+        getCommand("status").setExecutor(new StatusCommand(playerStatusManager));
         getCommand("status").setTabCompleter(new StatusTabCompletion(this.config));
         getCommand("reloadstatus").setExecutor(new ReloadstatusCommand(this));
     }
 
     private void registerListeners() {
         PluginManager manager = Bukkit.getPluginManager();
-        manager.registerEvents(new Chat(this.config, this.luckPerms), this);
-        manager.registerEvents(new Join(this.config, this.luckPerms), this);
-        manager.registerEvents(new Quit(this.config, this.luckPerms), this);
+        manager.registerEvents(new Chat(playerStatusManager, luckPerms), this);
+        manager.registerEvents(new Join(playerStatusManager, luckPerms), this);
+        manager.registerEvents(new Quit(playerStatusManager, luckPerms), this);
     }
 
     private void registerBStats(JavaPlugin plugin) {
         int pluginId = 15697;
-        Metrics metrics = new Metrics(plugin, pluginId);
-
-        metrics.addCustomChart(new SimplePie("chart_id", () -> "My value"));
+        new Metrics(plugin, pluginId);
+        // Metrics metrics = new Metrics(plugin, pluginId);
+        // metrics.addCustomChart(new SimplePie("chart_id", () -> "My value"));
     }
 
     public void reloadPlugin() {
@@ -84,18 +91,21 @@ public final class Statusplugin extends JavaPlugin {
         reloadConfig();
         this.config = getConfig();
 
-        registerBStats(this);
-        setupLuckPerms();
+        // Reload statuses
+        statusManager.loadStatuses(config);
 
-        registerCommands();
-        registerListeners();
+        // Update PlayerStatusManager with new config
+        this.playerStatusManager.setConfig(config);
 
+        // Refresh all online players
+        playerStatusManager.refreshAllOnlinePlayers();
+
+        // Re-hook PlaceholderAPI if needed
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PlaceholderStatusExpansion(this.config).register();
             getLogger().info(ChatColor.GOLD + "PlaceholderAPI" + ChatColor.GREEN + " has been hooked!");
         }
 
         getLogger().info(ChatColor.GREEN + "Statusplugin configuration reloaded!");
-
     }
 }

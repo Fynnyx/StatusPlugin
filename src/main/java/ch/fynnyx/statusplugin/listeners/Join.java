@@ -1,8 +1,5 @@
 package ch.fynnyx.statusplugin.listeners;
 
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -10,51 +7,50 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import ch.fynnyx.statusplugin.commands.StatusCommand;
-import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import ch.fynnyx.statusplugin.Statusplugin;
+import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
+import ch.fynnyx.statusplugin.models.Status;
 import net.luckperms.api.LuckPerms;
 
 public class Join implements Listener {
-    FileConfiguration config;
-    LuckPerms luckPerms;
 
-    public Join(FileConfiguration config, LuckPerms luckPerms) {
-        this.config = config;
+    private final PlayerStatusManager playerStatusManager;
+    private final LuckPerms luckPerms;
+    private final FileConfiguration config = Statusplugin.getPlugin(Statusplugin.class).getConfig();
+
+    public Join(PlayerStatusManager playerStatusManager, LuckPerms luckPerms) {
+        this.playerStatusManager = playerStatusManager;
         this.luckPerms = luckPerms;
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        try {
-            Player player = event.getPlayer();
-            if(config.getBoolean("default.use-default-on-join")) {
-                StatusPlayerConfigFile.getConfig().set("statuses." + player.getUniqueId(), config.getString("default.default-status"));
-                StatusPlayerConfigFile.saveConfig();
-            }
-            StatusCommand.setStatus(player);
-            if(config.getBoolean("show-join-leave-message")) {
-                String status = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
-                String color = config.getString("statuses." + status + ".color");
-                String prefix = config.getString("statuses." + status + ".prefix");
-                if ((color == null || prefix == null)) {
-                    color = "";
-                    prefix = "";
-                }
-                String format = config.getString("join-message-format");
+        Player player = event.getPlayer();
 
-                format = format.replace("%status%", "§" + color + prefix)
-                        .replace("%username%", player.getName());
+        // Always update their tablist display name
+        Status status = playerStatusManager.getPlayerStatus(player);
+        playerStatusManager.updateDisplayName(player, status.getKey());
 
-                if (!(luckPerms == null || luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix() == null)) {
-                    format = format.replace("%luckperms%", luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix());
-                } else {
-                    format = format.replace("%luckperms%", "LUCKPERMS");
-                }
-                format = ChatColor.translateAlternateColorCodes('&', format);
-                event.setJoinMessage(format);
+        // Show join message if enabled
+        if (config.getBoolean("show-join-leave-message", false)) {
+            String format = config.getString("join-message-format", "&e%status% &a%username% joined the game.");
+
+            format = format.replace("%status%", status.getColoredPrefix())
+                           .replace("%username%", player.getName());
+
+            if (luckPerms != null) {
+                String lpPrefix = luckPerms.getPlayerAdapter(Player.class)
+                                           .getUser(player)
+                                           .getCachedData()
+                                           .getMetaData()
+                                           .getPrefix();
+                format = format.replace("%luckperms%", lpPrefix != null ? lpPrefix : "");
+            } else {
+                format = format.replace("%luckperms%", "");
             }
-        } catch (NullPointerException e) {
-            Bukkit.getLogger().log(Level.WARNING, null, e);
+
+            format = ChatColor.translateAlternateColorCodes('&', format);
+            event.setJoinMessage(format);
         }
     }
 }

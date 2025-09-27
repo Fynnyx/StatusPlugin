@@ -1,8 +1,5 @@
 package ch.fynnyx.statusplugin.listeners;
 
-import java.util.logging.Level;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -10,42 +7,48 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import ch.fynnyx.statusplugin.Statusplugin;
+import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
+import ch.fynnyx.statusplugin.models.Status;
 import net.luckperms.api.LuckPerms;
 
 public class Quit implements Listener {
-    FileConfiguration config;
-    LuckPerms luckPerms;
 
-    public Quit(FileConfiguration config, LuckPerms luckPerms) {
-        this.config = config;
+    private final PlayerStatusManager playerStatusManager;
+    private final LuckPerms luckPerms;
+    private final FileConfiguration config = Statusplugin.getPlugin(Statusplugin.class).getConfig();
+
+    public Quit(PlayerStatusManager playerStatusManager, LuckPerms luckPerms) {
+        this.playerStatusManager = playerStatusManager;
         this.luckPerms = luckPerms;
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        try {
-            if(config.getBoolean("show-join-leave-message")) {
-                Player player = event.getPlayer();
-                String status = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
-                String color = config.getString("statuses." + status + ".color");
-                String prefix = config.getString("statuses." + status + ".prefix");
-                if ((color == null || prefix == null)) {
-                    color = "";
-                    prefix = "";
-                }
-                String format = config.getString("leave-message-format");
-                format = format.replace("%status%", "§" + color + prefix)
-                        .replace("%username%", player.getName());
-                if (!(luckPerms == null || luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix() == null)) {
-                    format = format.replace("%luckperms%", luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix());
-                } else {
-                    format = format.replace("%luckperms%", "LUCKPERMS");
-                }                format = ChatColor.translateAlternateColorCodes('&', format);
-                event.setQuitMessage(format);
+        Player player = event.getPlayer();
+
+        // Resolve player status (falls back to default if unset)
+        Status status = playerStatusManager.getPlayerStatus(player);
+
+        if (config.getBoolean("show-join-leave-message", false)) {
+            String format = config.getString("quit-message-format", "&e%status% &c%username% left the game.");
+
+            format = format.replace("%status%", status.getColoredPrefix())
+                           .replace("%username%", player.getName());
+
+            if (luckPerms != null) {
+                String lpPrefix = luckPerms.getPlayerAdapter(Player.class)
+                                           .getUser(player)
+                                           .getCachedData()
+                                           .getMetaData()
+                                           .getPrefix();
+                format = format.replace("%luckperms%", lpPrefix != null ? lpPrefix : "");
+            } else {
+                format = format.replace("%luckperms%", "");
             }
-        } catch (NullPointerException e) {
-            Bukkit.getLogger().log(Level.WARNING, null, e);;
+
+            format = ChatColor.translateAlternateColorCodes('&', format);
+            event.setQuitMessage(format);
         }
     }
 }

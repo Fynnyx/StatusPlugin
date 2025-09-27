@@ -7,46 +7,55 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import ch.fynnyx.statusplugin.Statusplugin;
+import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
+import ch.fynnyx.statusplugin.models.Status;
 import net.luckperms.api.LuckPerms;
 
 public class Chat implements Listener {
-    FileConfiguration config;
-    LuckPerms luckPerms;
-    public Chat(FileConfiguration config, LuckPerms luckPerms) {
-        this.config = config;
+
+    private final PlayerStatusManager playerStatusManager;
+    private final LuckPerms luckPerms;
+    private final FileConfiguration config = Statusplugin.getPlugin(Statusplugin.class).getConfig();
+
+    public Chat(PlayerStatusManager playerStatusManager, LuckPerms luckPerms) {
+        this.playerStatusManager = playerStatusManager;
         this.luckPerms = luckPerms;
     }
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        String message = event.getMessage();
-        Player player = event.getPlayer();
-        try {
-            if (config.getBoolean("show-in-chat")) {
-                String format = config.getString("chat-format");
-                String status = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
-                String color = config.getString("statuses." + status + ".color");
-                String prefix = config.getString("statuses." + status + ".prefix");
-                // User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
-                if ((color == null || prefix == null)) {
-                    color = "";
-                    prefix = "";
-                }
-                format = format.replace("%status%", "§" + color + prefix)
-                                .replace("%username%", player.getName())
-                                .replace("%message%", message);
-                if (!(luckPerms == null || luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix() == null)) {
-                    format = format.replace("%luckperms%", luckPerms.getPlayerAdapter(Player.class).getUser(player).getCachedData().getMetaData().getPrefix());
-                } else {
-                    format = format.replace("%luckperms%", "LUCKPERMS");
-                }
-                format = ChatColor.translateAlternateColorCodes('&', format);
-                event.setFormat(format);
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+        if (!config.getBoolean("show-in-chat", false)) {
+            return;
         }
 
+        Player player = event.getPlayer();
+        String message = event.getMessage();
+
+        // Get player status (with default fallback)
+        Status status = playerStatusManager.getPlayerStatus(player);
+
+        String format = config.getString(
+                "chat-format",
+                "&7[%status%] &f%username%: %message%"
+        );
+
+        format = format.replace("%status%", status.getColoredPrefix())
+                       .replace("%username%", player.getName())
+                       .replace("%message%", message);
+
+        if (luckPerms != null) {
+            String lpPrefix = luckPerms.getPlayerAdapter(Player.class)
+                                       .getUser(player)
+                                       .getCachedData()
+                                       .getMetaData()
+                                       .getPrefix();
+            format = format.replace("%luckperms%", lpPrefix != null ? lpPrefix : "");
+        } else {
+            format = format.replace("%luckperms%", "");
+        }
+
+        format = ChatColor.translateAlternateColorCodes('&', format);
+        event.setFormat(format);
     }
 }
