@@ -1,8 +1,6 @@
 package ch.fynnyx.statusplugin.commands;
 
-import ch.fynnyx.statusplugin.Statusplugin;
-import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
-import net.luckperms.api.LuckPerms;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,12 +9,15 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import net.luckperms.api.LuckPerms;
+
 public class StatusCommand implements CommandExecutor {
     static FileConfiguration config;
     static LuckPerms luckPerms;
     public StatusCommand(FileConfiguration config, LuckPerms luckPerms) {
-        this.config = config;
-        this.luckPerms = luckPerms;
+        StatusCommand.config = config;
+        StatusCommand.luckPerms = luckPerms;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class StatusCommand implements CommandExecutor {
             setStatus(player);
 
             player.sendMessage(ChatColor.GOLD + "Your status has been set to §" + color + prefix);
-            System.out.println(ChatColor.GOLD + "Player " + player.getName() + " has set their status to §" + color + prefix);
+            Bukkit.getLogger().info("Player " + player.getName() + " has set their status to §" + color + prefix);
             return true;
         }
         sender.sendMessage(ChatColor.RED + "To many arguments!");

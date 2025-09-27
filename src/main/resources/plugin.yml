@@ -1,12 +1,14 @@
 name: Statusplugin
 version: '${project.version}'
 main: ch.fynnyx.statusplugin.Statusplugin
-api-version: 1.19
+api-version: 1.21
 authors: [ Fynnyx ] 
 description: Define Statuses and display them in the Tab and in the Chat.
 depend:
   - LuckPerms
-
+softdepend:
+  - PlaceholderAPI
+  
 commands:
   status:
     description: "Set your status!"
@@ -14,6 +16,10 @@ commands:
     aliases:
       - st
     permission: status.setstatus
+  reloadstatus:
+    description: "Reload the config!"
+    usage: /reloadstatus
+    permission: status.reload
 
 permissions:
   status.setstatus:
@@ -22,3 +28,6 @@ permissions:
   status.setother:
     description: "Set other players status!"
     default: false
+  status.reload:
+    description: "Reload the config!"
+    default: op

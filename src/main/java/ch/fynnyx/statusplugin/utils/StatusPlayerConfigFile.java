@@ -1,11 +1,11 @@
 package ch.fynnyx.statusplugin.utils;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-
-import java.io.File;
-import java.io.IOException;
 
 public class StatusPlayerConfigFile {
     private static File file;
@@ -36,7 +36,7 @@ public class StatusPlayerConfigFile {
         try {
             config.save(file);
         } catch (IOException e) {
-            System.out.println("Couldn't save config file");
+            Bukkit.getLogger().warning("Couldn't save config gile");
             e.printStackTrace();
         }
     }

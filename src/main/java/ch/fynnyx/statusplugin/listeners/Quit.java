@@ -1,14 +1,17 @@
 package ch.fynnyx.statusplugin.listeners;
 
-import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
-import net.luckperms.api.LuckPerms;
+import java.util.logging.Level;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import net.luckperms.api.LuckPerms;
 
 public class Quit implements Listener {
     FileConfiguration config;
@@ -42,7 +45,7 @@ public class Quit implements Listener {
                 event.setQuitMessage(format);
             }
         } catch (NullPointerException e) {
-            System.out.println(e.getStackTrace());
+            Bukkit.getLogger().log(Level.WARNING, null, e);;
         }
     }
 }

@@ -1,15 +1,14 @@
 package ch.fynnyx.statusplugin.listeners;
 
-import ch.fynnyx.statusplugin.Statusplugin;
-import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.model.user.User;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import net.luckperms.api.LuckPerms;
 
 public class Chat implements Listener {
     FileConfiguration config;
@@ -29,7 +28,7 @@ public class Chat implements Listener {
                 String status = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
                 String color = config.getString("statuses." + status + ".color");
                 String prefix = config.getString("statuses." + status + ".prefix");
-                User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+                // User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
                 if ((color == null || prefix == null)) {
                     color = "";
                     prefix = "";

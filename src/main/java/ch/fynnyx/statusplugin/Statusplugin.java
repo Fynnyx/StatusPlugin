@@ -1,13 +1,5 @@
 package ch.fynnyx.statusplugin;
 
-import ch.fynnyx.statusplugin.commands.StatusCommand;
-import ch.fynnyx.statusplugin.commands.StatusTabCompletion;
-import ch.fynnyx.statusplugin.listeners.Chat;
-import ch.fynnyx.statusplugin.listeners.Join;
-import ch.fynnyx.statusplugin.listeners.Quit;
-import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -16,7 +8,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
+import ch.fynnyx.statusplugin.commands.ReloadstatusCommand;
+import ch.fynnyx.statusplugin.commands.StatusCommand;
+import ch.fynnyx.statusplugin.commands.StatusTabCompletion;
+import ch.fynnyx.statusplugin.listeners.Chat;
+import ch.fynnyx.statusplugin.listeners.Join;
+import ch.fynnyx.statusplugin.listeners.Quit;
+import ch.fynnyx.statusplugin.placeholder.PlaceholderStatusExpansion;
+import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 
 public final class Statusplugin extends JavaPlugin {
 
@@ -29,17 +30,22 @@ public final class Statusplugin extends JavaPlugin {
         registerBStats(this);
         setupConfigFile();
         setupLuckPerms();
+
+        registerCommands();
         registerListeners();
 
-        getCommand("status").setExecutor(new StatusCommand(this.config, this.luckPerms));
-        getCommand("status").setTabCompleter(new StatusTabCompletion(this.config));
-        System.out.println(ChatColor.GOLD + "Statusplugin" + ChatColor.GREEN + " has been enabled!");
+        getLogger().info(ChatColor.GOLD + "Statusplugin" + ChatColor.GREEN + " has been enabled!");
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderStatusExpansion(this.config).register();
+            getLogger().info(ChatColor.GOLD + "PlaceholderAPI" + ChatColor.GREEN + " has been hooked!");
+        }
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        System.out.println(ChatColor.GOLD + "Statusplugin" + ChatColor.GREEN + " has been disabled!");
+        getLogger().info(ChatColor.GOLD + "Statusplugin" + ChatColor.GREEN + " has been disabled!");
     }
 
     private void setupConfigFile() {
@@ -51,6 +57,12 @@ public final class Statusplugin extends JavaPlugin {
 
     private void setupLuckPerms() {
         this.luckPerms = LuckPermsProvider.get();
+    }
+
+    private void registerCommands() {
+        getCommand("status").setExecutor(new StatusCommand(this.config, this.luckPerms));
+        getCommand("status").setTabCompleter(new StatusTabCompletion(this.config));
+        getCommand("reloadstatus").setExecutor(new ReloadstatusCommand(this));
     }
 
     private void registerListeners() {
@@ -65,5 +77,25 @@ public final class Statusplugin extends JavaPlugin {
         Metrics metrics = new Metrics(plugin, pluginId);
 
         metrics.addCustomChart(new SimplePie("chart_id", () -> "My value"));
+    }
+
+    public void reloadPlugin() {
+        // Reload config
+        reloadConfig();
+        this.config = getConfig();
+
+        registerBStats(this);
+        setupLuckPerms();
+
+        registerCommands();
+        registerListeners();
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderStatusExpansion(this.config).register();
+            getLogger().info(ChatColor.GOLD + "PlaceholderAPI" + ChatColor.GREEN + " has been hooked!");
+        }
+
+        getLogger().info(ChatColor.GREEN + "Statusplugin configuration reloaded!");
+
     }
 }
