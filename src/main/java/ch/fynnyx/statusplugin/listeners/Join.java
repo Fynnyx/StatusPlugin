@@ -35,7 +35,7 @@ public class Join implements Listener {
         if (config.getBoolean("show-join-leave-message", false)) {
             String format = config.getString("join-message-format", "&e%status% &a%username% joined the game.");
 
-            format = format.replace("%status%", status.getColoredPrefix())
+            format = format.replace("%status%", status.getColoredName())
                            .replace("%username%", player.getName());
 
             if (luckPerms != null) {

@@ -20,6 +20,10 @@ commands:
     description: "Reload the config!"
     usage: /reloadstatus
     permission: status.reload
+  statuses:
+    description: "List all available statuses!"
+    usage: /statuses
+    permission: status.list
 
 permissions:
   status.setstatus:
@@ -28,6 +32,9 @@ permissions:
   status.setother:
     description: "Set other players status!"
     default: false
+  status.list:
+    description: "List all available statuses!"
+    default: true
   status.reload:
     description: "Reload the config!"
     default: op

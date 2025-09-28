@@ -23,6 +23,8 @@ public class StatusTabCompletion implements TabCompleter {
                     statuses.add(status);
                 }
             }
+            // Sort the statuses alphabetically
+            statuses.sort(String.CASE_INSENSITIVE_ORDER);
             return statuses;
         }
         return null;

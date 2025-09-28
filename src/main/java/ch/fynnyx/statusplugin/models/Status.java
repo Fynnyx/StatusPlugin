@@ -26,7 +26,7 @@ public class Status {
         return color;
     }
 
-    public String getColoredPrefix() {
+    public String getColoredName() {
         return color + name;
     }
 

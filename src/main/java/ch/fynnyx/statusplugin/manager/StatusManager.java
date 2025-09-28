@@ -69,9 +69,11 @@ public class StatusManager {
      * Returns the default status defined in config.
      */
     public Optional<Status> getDefaultStatus() {
+        System.out.println("defaultStatusKey: " + defaultStatusKey);
         if (defaultStatusKey == null) {
             return Optional.empty();
         }
+        System.out.println(getByKey(defaultStatusKey));
         return getByKey(defaultStatusKey);
     }
 }

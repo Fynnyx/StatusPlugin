@@ -40,7 +40,7 @@ public class Chat implements Listener {
                 "&7[%status%] &f%username%: %message%"
         );
 
-        format = format.replace("%status%", status.getColoredPrefix())
+        format = format.replace("%status%", status.getColoredName())
                        .replace("%username%", player.getName())
                        .replace("%message%", message);
 

@@ -33,7 +33,7 @@ public class Quit implements Listener {
         if (config.getBoolean("show-join-leave-message", false)) {
             String format = config.getString("quit-message-format", "&e%status% &c%username% left the game.");
 
-            format = format.replace("%status%", status.getColoredPrefix())
+            format = format.replace("%status%", status.getColoredName())
                            .replace("%username%", player.getName());
 
             if (luckPerms != null) {

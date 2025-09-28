@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ch.fynnyx.statusplugin.commands.ReloadstatusCommand;
 import ch.fynnyx.statusplugin.commands.StatusCommand;
 import ch.fynnyx.statusplugin.commands.StatusTabCompletion;
+import ch.fynnyx.statusplugin.commands.StatusesCommand;
 import ch.fynnyx.statusplugin.listeners.Chat;
 import ch.fynnyx.statusplugin.listeners.Join;
 import ch.fynnyx.statusplugin.listeners.Quit;
@@ -69,6 +70,9 @@ public final class Statusplugin extends JavaPlugin {
     private void registerCommands() {
         getCommand("status").setExecutor(new StatusCommand(playerStatusManager));
         getCommand("status").setTabCompleter(new StatusTabCompletion(this.config));
+
+        getCommand("statuses").setExecutor(new StatusesCommand(statusManager));
+
         getCommand("reloadstatus").setExecutor(new ReloadstatusCommand(this));
     }
 
@@ -90,6 +94,8 @@ public final class Statusplugin extends JavaPlugin {
         // Reload config
         reloadConfig();
         this.config = getConfig();
+
+        StatusPlayerConfigFile.reloadConfig();
 
         // Reload statuses
         statusManager.loadStatuses(config);

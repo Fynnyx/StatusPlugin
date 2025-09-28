@@ -72,7 +72,7 @@ public class PlayerStatusManager {
         Status status = optStatus.get();
         if (config.getBoolean("show-in-tablist")) {
             String format = config.getString("tablist-format", "%status% %username%");
-            format = format.replace("%status%", status.getColoredPrefix())
+            format = format.replace("%status%", status.getColoredName())
                     .replace("%username%", player.getName());
 
             if (luckPerms != null) {
