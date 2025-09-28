@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -28,7 +29,7 @@ public class StatusManager {
 
         ConfigurationSection section = config.getConfigurationSection("statuses");
         if (section == null) {
-            System.out.println("[StatusPlugin] No 'statuses' section found in config.yml");
+            Bukkit.getLogger().warning("No 'statuses' section found in config.yml");
             return;
         }
 
@@ -37,13 +38,13 @@ public class StatusManager {
             String colorCode = section.getString(key + ".color");
 
             if (prefix == null || colorCode == null || colorCode.isEmpty()) {
-                System.out.println("[StatusPlugin] Skipping invalid status: " + key);
+                Bukkit.getLogger().warning("Skipping invalid status: " + key);
                 continue;
             }
 
             ChatColor color = ChatColor.getByChar(colorCode.charAt(0));
             if (color == null) {
-                System.out.println("[StatusPlugin] Invalid color code '" + colorCode + "' for status: " + key);
+                Bukkit.getLogger().warning("Invalid color code '" + colorCode + "' for status: " + key);
                 continue;
             }
 
@@ -69,11 +70,9 @@ public class StatusManager {
      * Returns the default status defined in config.
      */
     public Optional<Status> getDefaultStatus() {
-        System.out.println("defaultStatusKey: " + defaultStatusKey);
         if (defaultStatusKey == null) {
             return Optional.empty();
         }
-        System.out.println(getByKey(defaultStatusKey));
         return getByKey(defaultStatusKey);
     }
 }

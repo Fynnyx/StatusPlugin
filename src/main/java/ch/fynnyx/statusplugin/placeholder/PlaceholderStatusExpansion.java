@@ -1,19 +1,21 @@
 package ch.fynnyx.statusplugin.placeholder;
 
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
+import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.md_5.bungee.api.ChatColor;
 
 public class PlaceholderStatusExpansion extends PlaceholderExpansion {
 
+    PlayerStatusManager playerStatusManager;
     FileConfiguration config;
 
-    public PlaceholderStatusExpansion(FileConfiguration config) {
+    public PlaceholderStatusExpansion(FileConfiguration config, PlayerStatusManager playerStatusManager) {
         this.config = config;
+        this.playerStatusManager = playerStatusManager;
     }
 
     @Override
@@ -34,16 +36,15 @@ public class PlaceholderStatusExpansion extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String identifier) {
         if (identifier.equals("status")) {
-            String placeholderString = this.config.getString("placeholders.status.placeholderString");
-            String playerstatus = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
-            String prefix = config.getString("statuses." + playerstatus + ".prefix");
-            String color = config.getString("statuses." + playerstatus + ".color");
-            String statusString = "§" + color + prefix + "§r";
+            String placeholderString = config.getString("placeholders.status.placeholderString");
+
+            placeholderString = placeholderString.replace("%status%", playerStatusManager.getPlayerStatus(player).getColoredName());
+
             if (!config.getBoolean("placeholders.status.returnWithColorFormatting")) {
-                statusString = ChatColor.stripColor(statusString);
+                placeholderString = ChatColor.stripColor(placeholderString);
             }
-            String status = placeholderString.replace("%status%", statusString);
-            return status != null ? status : "";
+
+            return placeholderString;
         }
         return null;
     }

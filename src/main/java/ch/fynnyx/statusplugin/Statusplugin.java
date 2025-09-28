@@ -43,10 +43,7 @@ public final class Statusplugin extends JavaPlugin {
         registerCommands();
         registerListeners();
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderStatusExpansion(this.config).register();
-            getLogger().info(ChatColor.GOLD + "PlaceholderAPI" + ChatColor.GREEN + " has been hooked!");
-        }
+        registerPlaceholderAPI();
 
         getLogger().info(ChatColor.GOLD + "Statusplugin" + ChatColor.GREEN + " has been enabled!");
     }
@@ -83,6 +80,13 @@ public final class Statusplugin extends JavaPlugin {
         manager.registerEvents(new Quit(playerStatusManager, luckPerms), this);
     }
 
+    private void registerPlaceholderAPI() {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderStatusExpansion(this.config,this.playerStatusManager).register();
+            getLogger().info(ChatColor.GOLD + "PlaceholderAPI" + ChatColor.GREEN + " has been hooked!");
+        }
+    }
+
     private void registerBStats(JavaPlugin plugin) {
         int pluginId = 15697;
         new Metrics(plugin, pluginId);
@@ -107,10 +111,7 @@ public final class Statusplugin extends JavaPlugin {
         playerStatusManager.refreshAllOnlinePlayers();
 
         // Re-hook PlaceholderAPI if needed
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceholderStatusExpansion(this.config).register();
-            getLogger().info(ChatColor.GOLD + "PlaceholderAPI" + ChatColor.GREEN + " has been hooked!");
-        }
+        registerPlaceholderAPI();
 
         getLogger().info(ChatColor.GREEN + "Statusplugin configuration reloaded!");
     }
