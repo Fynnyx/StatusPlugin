@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
+import ch.fynnyx.statusplugin.models.Status;
 
 public class StatusCommand implements CommandExecutor {
 
@@ -32,8 +33,8 @@ public class StatusCommand implements CommandExecutor {
 
         if (args.length == 1 && sender instanceof Player) {
             Player player = (Player) sender;
-            playerStatusManager.setPlayerStatus(player, args[0]);
-            player.sendMessage(ChatColor.GOLD + "Your status has been set to " + args[0]);
+            Status status = playerStatusManager.setPlayerStatus(player, args[0]);
+            player.sendMessage(ChatColor.GOLD + "Your status has been set to " + status.getColoredName());
             return true;
         }
 

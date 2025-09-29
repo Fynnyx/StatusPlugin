@@ -54,10 +54,11 @@ public class PlayerStatusManager {
     /**
      * Saves the player's status.
      */
-    public void setPlayerStatus(Player player, String key) {
+    public Status setPlayerStatus(Player player, String key) {
         StatusPlayerConfigFile.getConfig().set("statuses." + player.getUniqueId(), key);
         StatusPlayerConfigFile.saveConfig();
         updateDisplayName(player, key);
+        return statusManager.getByKey(key).orElse(null);
     }
 
     /**

@@ -66,7 +66,7 @@ public final class Statusplugin extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("status").setExecutor(new StatusCommand(playerStatusManager));
-        getCommand("status").setTabCompleter(new StatusTabCompletion(this.config));
+        getCommand("status").setTabCompleter(new StatusTabCompletion(statusManager));
 
         getCommand("statuses").setExecutor(new StatusesCommand(statusManager));
 
