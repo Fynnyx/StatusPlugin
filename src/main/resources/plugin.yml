@@ -4,8 +4,6 @@ main: ch.fynnyx.statusplugin.Statusplugin
 api-version: 1.21
 authors: [ Fynnyx ] 
 description: Define Statuses and display them in the Tab and in the Chat.
-depend:
-  - LuckPerms
 softdepend:
   - PlaceholderAPI
   
