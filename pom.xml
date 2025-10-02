@@ -6,12 +6,12 @@
 
     <groupId>ch.fynnyx</groupId>
     <artifactId>statusplugin</artifactId>
-    <version>3.2.3</version>
+    <version>4.0.0</version>
     <packaging>jar</packaging>
 
     <name>Statusplugin</name>
 
-    <description>Define Statuses and display them in the Tab and in the Chat.</description>
+    <description>Define Statuses and display them in the Tab and Chat.</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

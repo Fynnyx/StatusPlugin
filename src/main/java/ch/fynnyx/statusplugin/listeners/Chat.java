@@ -25,7 +25,7 @@ public class Chat implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (!config.getBoolean("show-in-chat", false)) {
+        if (!config.getBoolean("chat.enabled", true)) {
             return;
         }
 
@@ -36,7 +36,7 @@ public class Chat implements Listener {
         Status status = playerStatusManager.getPlayerStatus(player);
 
         String format = config.getString(
-                "chat-format",
+                "chat.format",
                 "&7[%status%] &f%username%: %message%"
         );
 

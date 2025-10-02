@@ -8,34 +8,65 @@ default:
 # Define the statuses. The root Element is the selection in the command.
 # The color is defined by the default minecraft colors.
 statuses:
-  afk:
+  AFK:
     prefix: AFK
     color: 8
+  Chill:
+    prefix: Chill
+    color: a
 #  Create a list of statuses. The root Element is the selection in the command.
 #  For example ... an so on
 # rp:
 #   prefix: RP
 #   color: b
 
-# To color the text use the & symbol
-# You can use the following placeholders:
-# %username% - The username of the player
-# %status% - The status of the player
-# %luckperms% - The luckperms prefix of the player
 
-# Enable the tablist from this plugin. (Luckperms compatible)
-show-in-tablist: true
-tablist-format: '&7[%status% &r%username% - &r%luckperms%&7]'
+# TABLIST
+tablist:
+  # Enable the tablist from this plugin. (Luckperms compatible)
+  enabled: true
 
-# Enable the chat format from this plugin. (Luckperms compatible)
-# %message% - display the message
-show-in-chat: true
-chat-format: '&7[%status% &r%username% - &r%luckperms%&7] &r%message%'
+  # To color the text use the & symbol
+  # You can use the following placeholders:
+  # %username% - The username of the player
+  # %status% - The status of the player
+  # %luckperms% - The luckperms prefix of the player
+  format: "&7[%status% &r%username% - &r%luckperms%&7]"
 
-# Enable the join message from this plugin. (Luckperms compatible)
-show-join-leave-message: true
-join-message-format: '&7[%status% &r%username% - &r%luckperms%&7] &ejoined the server'
-leave-message-format: '&7[%status% &r%username% - &r%luckperms%&7] &eleft the server'
+# CHAT
+chat:
+  # Enable the chat format from this plugin. (Luckperms compatible)
+  enabled: true
+
+  # To color the text use the & symbol
+  # You can use the following placeholders:
+  # %username% - The username of the player
+  # %status% - The status of the player
+  # %luckperms% - The luckperms prefix of the player
+  # %message% - display the message
+  format: "&7[%status% &r%username% - &r%luckperms%&7] &r%message%"
+
+# JOIN/LEAVE MESSAGE
+join-leave:
+  # Enable the join message from this plugin. (Luckperms compatible)
+  enabled: true
+
+  # To color the text use the & symbol
+  # You can use the following placeholders:
+  # %username% - The username of the player
+  # %status% - The status of the player
+  # %luckperms% - The luckperms prefix of the player
+  join-message-format: "&7[%status% &r%username% - &r%luckperms%&7] &ejoined the server"
+  leave-message-format: "&7[%status% &r%username% - &r%luckperms%&7] &eleft the server"
+
+# AFK
+afk:
+  # Enable the AFK status
+  enabled: true
+  # Set the AFK status. It must be defined in the statuses section.
+  status: 'AFK'
+  # Set the time in seconds after the player is marked as AFK
+  time: 300
 
 
 # PlaceholderAPI Support

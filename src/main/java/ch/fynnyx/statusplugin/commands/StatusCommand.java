@@ -34,6 +34,11 @@ public class StatusCommand implements CommandExecutor {
         if (args.length == 1 && sender instanceof Player) {
             Player player = (Player) sender;
             Status status = playerStatusManager.setPlayerStatus(player, args[0]);
+
+            if (!playerStatusManager.playerHasStatusPermission(player, args[0]) && !player.isOp()) {
+                sender.sendMessage(ChatColor.RED + "You don't have permission to use the status " + status.getColoredName());
+                return true;
+            }
             player.sendMessage(ChatColor.GOLD + "Your status has been set to " + status.getColoredName());
             return true;
         }
@@ -46,6 +51,10 @@ public class StatusCommand implements CommandExecutor {
             Player target = sender.getServer().getPlayer(args[1]);
             if (target == null) {
                 sender.sendMessage(ChatColor.RED + "Player not found!");
+                return true;
+            }
+            if (!playerStatusManager.playerHasStatusPermission((Player) sender, args[0]) && !sender.isOp()) {
+                sender.sendMessage(ChatColor.RED + "You don't have permission to use the status " + args[0]);
                 return true;
             }
             playerStatusManager.setPlayerStatus(target, args[0]);

@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import ch.fynnyx.statusplugin.models.Status;
 import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
@@ -67,12 +68,13 @@ public class PlayerStatusManager {
     public void updateDisplayName(Player player, String key) {
         Optional<Status> optStatus = statusManager.getByKey(key);
         if (optStatus.isEmpty()) {
+            Bukkit.getLogger().warning(key + " is not a valid status key!");
             return;
         }
 
         Status status = optStatus.get();
-        if (config.getBoolean("show-in-tablist")) {
-            String format = config.getString("tablist-format", "%status% %username%");
+        if (config.getBoolean("tablist.enabled", true)) {
+            String format = config.getString("tablist.format", "%status% %username%");
             format = format.replace("%status%", status.getColoredName())
                     .replace("%username%", player.getName());
 
@@ -87,6 +89,31 @@ public class PlayerStatusManager {
 
             player.setPlayerListName(ChatColor.translateAlternateColorCodes('&', format));
         }
+    }
+
+    public boolean playerHasStatusPermission(Player player, String key) {
+        String permission = "status.status." + key;
+
+        for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
+            String perm = info.getPermission();
+
+            // Explicit deny check
+            if (perm.equalsIgnoreCase(permission)
+                    || perm.equalsIgnoreCase("status.status.*")
+                    || perm.equalsIgnoreCase("*")) {
+
+                // If explicitly false → deny
+                if (!info.getValue()) {
+                    return false;
+                }
+
+                // If true → allow
+                return true;
+            }
+        }
+
+        // Default: allowed if not set
+        return true;
     }
 
     /**

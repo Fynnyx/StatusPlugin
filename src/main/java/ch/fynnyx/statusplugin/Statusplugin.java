@@ -14,6 +14,7 @@ import ch.fynnyx.statusplugin.commands.StatusesCommand;
 import ch.fynnyx.statusplugin.listeners.Chat;
 import ch.fynnyx.statusplugin.listeners.Join;
 import ch.fynnyx.statusplugin.listeners.Quit;
+import ch.fynnyx.statusplugin.manager.AFKManager;
 import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
 import ch.fynnyx.statusplugin.manager.StatusManager;
 import ch.fynnyx.statusplugin.placeholder.PlaceholderStatusExpansion;
@@ -39,6 +40,8 @@ public final class Statusplugin extends JavaPlugin {
         statusManager.loadStatuses(config);
 
         this.playerStatusManager = new PlayerStatusManager(config, luckPerms, statusManager);
+
+        new AFKManager(this, statusManager, playerStatusManager);
 
         registerCommands();
         registerListeners();
@@ -109,6 +112,8 @@ public final class Statusplugin extends JavaPlugin {
 
         // Refresh all online players
         playerStatusManager.refreshAllOnlinePlayers();
+
+        new AFKManager(this, statusManager, playerStatusManager);
 
         // Re-hook PlaceholderAPI if needed
         registerPlaceholderAPI();

@@ -32,8 +32,8 @@ public class Join implements Listener {
         playerStatusManager.updateDisplayName(player, status.getKey());
 
         // Show join message if enabled
-        if (config.getBoolean("show-join-leave-message", false)) {
-            String format = config.getString("join-message-format", "&e%status% &a%username% joined the game.");
+        if (config.getBoolean("join-leave.enabled", true)) {
+            String format = config.getString("join-leave.join-message-format", "%status% &e%username% joined the game.");
 
             format = format.replace("%status%", status.getColoredName())
                            .replace("%username%", player.getName());

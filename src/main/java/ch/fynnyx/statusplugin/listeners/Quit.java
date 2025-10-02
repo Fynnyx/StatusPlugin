@@ -30,8 +30,8 @@ public class Quit implements Listener {
         // Resolve player status (falls back to default if unset)
         Status status = playerStatusManager.getPlayerStatus(player);
 
-        if (config.getBoolean("show-join-leave-message", false)) {
-            String format = config.getString("quit-message-format", "&e%status% &c%username% left the game.");
+        if (config.getBoolean("join-leave.enabled", true)) {
+            String format = config.getString("join-leave.leave-message-format", "&e%status% &c%username% left the game.");
 
             format = format.replace("%status%", status.getColoredName())
                            .replace("%username%", player.getName());
