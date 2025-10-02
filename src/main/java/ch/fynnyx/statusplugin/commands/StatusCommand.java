@@ -1,5 +1,7 @@
 package ch.fynnyx.statusplugin.commands;
 
+import java.util.Optional;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -7,14 +9,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
+import ch.fynnyx.statusplugin.manager.StatusManager;
 import ch.fynnyx.statusplugin.models.Status;
 
 public class StatusCommand implements CommandExecutor {
 
     private final PlayerStatusManager playerStatusManager;
+    private final StatusManager statusManager;
 
-    public StatusCommand(PlayerStatusManager playerStatusManager) {
+    public StatusCommand(PlayerStatusManager playerStatusManager, StatusManager statusManager) {
         this.playerStatusManager = playerStatusManager;
+        this.statusManager = statusManager;
     }
 
     @Override
@@ -33,14 +38,23 @@ public class StatusCommand implements CommandExecutor {
 
         if (args.length == 1 && sender instanceof Player) {
             Player player = (Player) sender;
-            Status status = playerStatusManager.setPlayerStatus(player, args[0]);
 
-            if (!playerStatusManager.playerHasStatusPermission(player, args[0]) && !player.isOp()) {
-                sender.sendMessage(ChatColor.RED + "You don't have permission to use the status " + status.getColoredName());
+            Optional<Status> status = statusManager.getByKey(args[0]);
+
+            if (status.isEmpty()) {
+                sender.sendMessage(ChatColor.RED + "Status not found!");
+                return true;
+            } else {
+                if (!playerStatusManager.playerHasStatusPermission(player, args[0]) && !player.isOp()) {
+                    sender.sendMessage(
+                            ChatColor.RED + "You don't have permission to use the status " + status.get().getColoredName());
+                    return true;
+                }
+
+                playerStatusManager.setPlayerStatus(player, args[0]);
+                player.sendMessage(ChatColor.GOLD + "Your status has been set to " + status.get().getColoredName());
                 return true;
             }
-            player.sendMessage(ChatColor.GOLD + "Your status has been set to " + status.getColoredName());
-            return true;
         }
 
         if (args.length == 2) {
