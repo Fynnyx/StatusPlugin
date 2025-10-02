@@ -9,7 +9,6 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import ch.fynnyx.statusplugin.models.Status;
 import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 
 public class PlayerStatusManager {
@@ -76,7 +75,9 @@ public class PlayerStatusManager {
             format = format.replace("%status%", status.getColoredName())
                     .replace("%username%", player.getName());
 
-            PlaceholderAPI.setPlaceholders(player, format);
+            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                format = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, format);
+            }
 
             player.setPlayerListName(ChatColor.translateAlternateColorCodes('&', format));
         }

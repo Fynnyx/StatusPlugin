@@ -1,5 +1,6 @@
 package ch.fynnyx.statusplugin.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -9,7 +10,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
 import ch.fynnyx.statusplugin.models.Status;
-import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Chat implements Listener {
 
@@ -35,14 +35,15 @@ public class Chat implements Listener {
 
         String format = config.getString(
                 "chat.format",
-                "&7[%status%] &f%username%: %message%"
-        );
+                "&7[%status%] &f%username%: %message%");
 
         format = format.replace("%status%", status.getColoredName())
-                       .replace("%username%", player.getName())
-                       .replace("%message%", message);
+                .replace("%username%", player.getName())
+                .replace("%message%", message);
 
-        PlaceholderAPI.setPlaceholders(player, format);
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            format = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, format);
+        }
 
         format = ChatColor.translateAlternateColorCodes('&', format);
         event.setFormat(format);
