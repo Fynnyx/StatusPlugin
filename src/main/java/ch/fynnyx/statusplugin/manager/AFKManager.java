@@ -41,7 +41,7 @@ public class AFKManager implements Listener {
         int seconds = plugin.getConfig().getInt("afk.time", 5);
         this.afkTimeoutMillis = seconds * 1000L;
         String afkStatus = plugin.getConfig().getString("afk.status");
-        if (afkStatus == null || statusManager.getByKey(afkStatus) == null) {
+        if (afkStatus == null || this.statusManager.getByKey(afkStatus) == null) {
             plugin.getLogger().warning("AFK status '" + afkStatus + "' is not defined in config.yml!");
             plugin.getLogger().warning("Disabling AFK feature.");
             this.afkStatus = "AFK";

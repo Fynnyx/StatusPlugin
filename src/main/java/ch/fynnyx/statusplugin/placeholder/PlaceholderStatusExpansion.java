@@ -35,7 +35,7 @@ public class PlaceholderStatusExpansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String identifier) {
-        if (identifier.equals("status")) {
+        if (identifier.equalsIgnoreCase("status")) {
             String placeholderString = config.getString("placeholders.status.placeholderString");
 
             placeholderString = placeholderString.replace("%status%", playerStatusManager.getPlayerStatus(player).getColoredName());

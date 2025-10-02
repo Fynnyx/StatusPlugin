@@ -9,18 +9,16 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import ch.fynnyx.statusplugin.models.Status;
 import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
-import net.luckperms.api.LuckPerms;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 
 public class PlayerStatusManager {
 
     private FileConfiguration config;
-    private final LuckPerms luckPerms;
     private final StatusManager statusManager;
 
-    public PlayerStatusManager(FileConfiguration config, LuckPerms luckPerms, StatusManager statusManager) {
+    public PlayerStatusManager(FileConfiguration config, StatusManager statusManager) {
         this.config = config;
-        this.luckPerms = luckPerms;
         this.statusManager = statusManager;
     }
 
@@ -78,14 +76,7 @@ public class PlayerStatusManager {
             format = format.replace("%status%", status.getColoredName())
                     .replace("%username%", player.getName());
 
-            if (luckPerms != null) {
-                String lpPrefix = luckPerms.getPlayerAdapter(Player.class)
-                        .getUser(player)
-                        .getCachedData()
-                        .getMetaData()
-                        .getPrefix();
-                format = format.replace("%luckperms%", lpPrefix != null ? lpPrefix : "");
-            }
+            PlaceholderAPI.setPlaceholders(player, format);
 
             player.setPlayerListName(ChatColor.translateAlternateColorCodes('&', format));
         }

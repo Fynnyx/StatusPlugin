@@ -7,20 +7,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import ch.fynnyx.statusplugin.Statusplugin;
 import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
 import ch.fynnyx.statusplugin.models.Status;
-import net.luckperms.api.LuckPerms;
+import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Chat implements Listener {
 
     private final PlayerStatusManager playerStatusManager;
-    private final LuckPerms luckPerms;
-    private final FileConfiguration config = Statusplugin.getPlugin(Statusplugin.class).getConfig();
+    private final FileConfiguration config;
 
-    public Chat(PlayerStatusManager playerStatusManager, LuckPerms luckPerms) {
+    public Chat(FileConfiguration config, PlayerStatusManager playerStatusManager) {
+        this.config = config;
         this.playerStatusManager = playerStatusManager;
-        this.luckPerms = luckPerms;
     }
 
     @EventHandler
@@ -44,16 +42,7 @@ public class Chat implements Listener {
                        .replace("%username%", player.getName())
                        .replace("%message%", message);
 
-        if (luckPerms != null) {
-            String lpPrefix = luckPerms.getPlayerAdapter(Player.class)
-                                       .getUser(player)
-                                       .getCachedData()
-                                       .getMetaData()
-                                       .getPrefix();
-            format = format.replace("%luckperms%", lpPrefix != null ? lpPrefix : "");
-        } else {
-            format = format.replace("%luckperms%", "");
-        }
+        PlaceholderAPI.setPlaceholders(player, format);
 
         format = ChatColor.translateAlternateColorCodes('&', format);
         event.setFormat(format);

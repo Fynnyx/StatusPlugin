@@ -19,13 +19,10 @@ import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
 import ch.fynnyx.statusplugin.manager.StatusManager;
 import ch.fynnyx.statusplugin.placeholder.PlaceholderStatusExpansion;
 import ch.fynnyx.statusplugin.utils.StatusPlayerConfigFile;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 
 public final class Statusplugin extends JavaPlugin {
 
     private FileConfiguration config;
-    private LuckPerms luckPerms;
     private StatusManager statusManager;
     private PlayerStatusManager playerStatusManager;
 
@@ -33,13 +30,12 @@ public final class Statusplugin extends JavaPlugin {
     public void onEnable() {
         registerBStats(this);
         setupConfigFile();
-        setupLuckPerms();
 
         // Init managers
         this.statusManager = new StatusManager();
         statusManager.loadStatuses(config);
 
-        this.playerStatusManager = new PlayerStatusManager(config, luckPerms, statusManager);
+        this.playerStatusManager = new PlayerStatusManager(config, statusManager);
 
         new AFKManager(this, statusManager, playerStatusManager);
 
@@ -63,10 +59,6 @@ public final class Statusplugin extends JavaPlugin {
         StatusPlayerConfigFile.setup();
     }
 
-    private void setupLuckPerms() {
-        this.luckPerms = LuckPermsProvider.get();
-    }
-
     private void registerCommands() {
         getCommand("status").setExecutor(new StatusCommand(playerStatusManager));
         getCommand("status").setTabCompleter(new StatusTabCompletion(statusManager));
@@ -78,9 +70,9 @@ public final class Statusplugin extends JavaPlugin {
 
     private void registerListeners() {
         PluginManager manager = Bukkit.getPluginManager();
-        manager.registerEvents(new Chat(playerStatusManager, luckPerms), this);
-        manager.registerEvents(new Join(playerStatusManager, luckPerms), this);
-        manager.registerEvents(new Quit(playerStatusManager, luckPerms), this);
+        manager.registerEvents(new Chat(config, playerStatusManager), this);
+        manager.registerEvents(new Join(config, playerStatusManager), this);
+        manager.registerEvents(new Quit(config, playerStatusManager), this);
     }
 
     private void registerPlaceholderAPI() {

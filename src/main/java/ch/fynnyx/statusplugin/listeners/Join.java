@@ -7,20 +7,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import ch.fynnyx.statusplugin.Statusplugin;
 import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
 import ch.fynnyx.statusplugin.models.Status;
-import net.luckperms.api.LuckPerms;
+import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Join implements Listener {
 
     private final PlayerStatusManager playerStatusManager;
-    private final LuckPerms luckPerms;
-    private final FileConfiguration config = Statusplugin.getPlugin(Statusplugin.class).getConfig();
+    private final FileConfiguration config;
 
-    public Join(PlayerStatusManager playerStatusManager, LuckPerms luckPerms) {
+    public Join(FileConfiguration config, PlayerStatusManager playerStatusManager) {
+        this.config = config;
         this.playerStatusManager = playerStatusManager;
-        this.luckPerms = luckPerms;
     }
 
     @EventHandler
@@ -38,16 +36,7 @@ public class Join implements Listener {
             format = format.replace("%status%", status.getColoredName())
                            .replace("%username%", player.getName());
 
-            if (luckPerms != null) {
-                String lpPrefix = luckPerms.getPlayerAdapter(Player.class)
-                                           .getUser(player)
-                                           .getCachedData()
-                                           .getMetaData()
-                                           .getPrefix();
-                format = format.replace("%luckperms%", lpPrefix != null ? lpPrefix : "");
-            } else {
-                format = format.replace("%luckperms%", "");
-            }
+            PlaceholderAPI.setPlaceholders(player, format);
 
             format = ChatColor.translateAlternateColorCodes('&', format);
             event.setJoinMessage(format);
