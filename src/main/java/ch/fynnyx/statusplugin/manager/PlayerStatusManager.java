@@ -26,7 +26,6 @@ public class PlayerStatusManager {
      */
     public String getPlayerStatusKey(Player player) {
         String key = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
-        System.out.println(key);
         if (key == null || statusManager.getByKey(key).isEmpty()) {
             Optional<Status> defaultStatus = statusManager.getDefaultStatus();
             if (defaultStatus.isPresent() && config.getBoolean("default.use-default-on-join")) {
@@ -35,7 +34,6 @@ public class PlayerStatusManager {
                 key = null;
             }
         }
-        System.out.println("getPlayerStatusKey returning: " + key);
         return key;
     }
 

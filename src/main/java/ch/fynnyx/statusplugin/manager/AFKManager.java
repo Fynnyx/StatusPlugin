@@ -64,7 +64,6 @@ public class AFKManager implements Listener {
         if (afkPlayers.remove(player.getUniqueId())) {
             // restore last status if stored
             String oldStatus = lastStatus.remove(player.getUniqueId());
-            System.out.println("Restoring old status: " + oldStatus);
             if (oldStatus != null) {
                 playerStatusManager.setPlayerStatus(player, oldStatus);
             } else {

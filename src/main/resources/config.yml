@@ -2,9 +2,9 @@
 
 default:
   # Enable if the player should get always a default status when the player joins the server
-  use-default-on-join: false
+  use-default-on-join: true
   #Set the default status. It will also be set if the player doesn't have a status set.
-  default-status: 'afk'
+  default-status: 'Chill'
 # Define the statuses. The root Element is the selection in the command.
 # The color is defined by the default minecraft colors.
 statuses:

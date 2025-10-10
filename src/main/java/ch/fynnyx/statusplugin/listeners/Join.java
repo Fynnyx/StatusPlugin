@@ -27,7 +27,6 @@ public class Join implements Listener {
 
         // Always update their tablist display name
         Status status = playerStatusManager.getPlayerStatus(player);
-        System.out.println("onJoin: " + status);
         playerStatusManager.updateDisplayName(player, status != null ? status.getKey() : null);
 
         // Show join message if enabled
