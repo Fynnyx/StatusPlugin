@@ -26,13 +26,16 @@ public class PlayerStatusManager {
      */
     public String getPlayerStatusKey(Player player) {
         String key = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
-        if (key == null || !statusManager.getByKey(key).isPresent()) {
+        System.out.println(key);
+        if (key == null || statusManager.getByKey(key).isEmpty()) {
             Optional<Status> defaultStatus = statusManager.getDefaultStatus();
-            if (!defaultStatus.isEmpty()) {
+            if (defaultStatus.isPresent() && config.getBoolean("default.use-default-on-join")) {
                 key = defaultStatus.get().getKey();
+            } else {
+                key = null;
             }
-
         }
+        System.out.println("getPlayerStatusKey returning: " + key);
         return key;
     }
 
@@ -40,13 +43,7 @@ public class PlayerStatusManager {
      * Gets the player's status. If not set, returns the current default.
      */
     public Status getPlayerStatus(Player player) {
-        String key = StatusPlayerConfigFile.getConfig().getString("statuses." + player.getUniqueId());
-
-        if (key != null) {
-            return statusManager.getByKey(key)
-                    .orElseGet(() -> statusManager.getDefaultStatus().orElse(null));
-        }
-        return statusManager.getDefaultStatus().orElse(null);
+        return statusManager.getByKey(getPlayerStatusKey(player)).orElse(null);
     }
 
     /**
@@ -64,15 +61,17 @@ public class PlayerStatusManager {
      */
     public void updateDisplayName(Player player, String key) {
         Optional<Status> optStatus = statusManager.getByKey(key);
-        if (optStatus.isEmpty()) {
+        Status status;
+        if (optStatus.isPresent()) {
+            status = optStatus.get();
+        } else {
             Bukkit.getLogger().warning(key + " is not a valid status key!");
-            return;
+            status = null;
         }
 
-        Status status = optStatus.get();
         if (config.getBoolean("tablist.enabled", true)) {
             String format = config.getString("tablist.format", "%status% %username%");
-            format = format.replace("%status%", status.getColoredName())
+            format = format.replace("%status%", status != null ? status.getColoredName() : "")
                     .replace("%username%", player.getName());
 
             if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import ch.fynnyx.statusplugin.manager.PlayerStatusManager;
+import ch.fynnyx.statusplugin.models.Status;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.md_5.bungee.api.ChatColor;
 
@@ -37,8 +38,9 @@ public class PlaceholderStatusExpansion extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player player, @NotNull String identifier) {
         if (identifier.equalsIgnoreCase("status")) {
             String placeholderString = config.getString("placeholders.status.placeholderString");
+            Status status = playerStatusManager.getPlayerStatus(player);
 
-            placeholderString = placeholderString.replace("%status%", playerStatusManager.getPlayerStatus(player).getColoredName());
+            placeholderString = placeholderString.replace("%status%", status != null ? status.getColoredName() : "");
 
             if (!config.getBoolean("placeholders.status.returnWithColorFormatting")) {
                 placeholderString = ChatColor.stripColor(placeholderString);

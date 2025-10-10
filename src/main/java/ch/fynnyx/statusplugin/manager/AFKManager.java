@@ -64,8 +64,11 @@ public class AFKManager implements Listener {
         if (afkPlayers.remove(player.getUniqueId())) {
             // restore last status if stored
             String oldStatus = lastStatus.remove(player.getUniqueId());
+            System.out.println("Restoring old status: " + oldStatus);
             if (oldStatus != null) {
                 playerStatusManager.setPlayerStatus(player, oldStatus);
+            } else {
+                playerStatusManager.setPlayerStatus(player, null);
             }
         }
     }
@@ -80,6 +83,35 @@ public class AFKManager implements Listener {
             }
             playerStatusManager.setPlayerStatus(player, afkStatus);
         }
+    }
+
+    public void resetAfk(Player player) {
+        if (afkPlayers.remove(player.getUniqueId())) {
+            lastActive.remove(player.getUniqueId());
+            // restore last status if stored
+            String oldStatus = lastStatus.remove(player.getUniqueId());
+            if (oldStatus != null) {
+                playerStatusManager.setPlayerStatus(player, oldStatus);
+            } else {
+                playerStatusManager.setPlayerStatus(player, null);
+            }
+        }
+    }
+
+    public void resetAllAfk() {
+        Integer afkCount = afkPlayers.size();
+        if (afkCount == 0) {
+            return;
+        }
+        Integer removeCount = 0;
+        for (UUID uuid : new HashSet<>(afkPlayers)) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                resetAfk(player);
+                removeCount++;
+            }
+        }
+        Bukkit.getLogger().info("AFK status has been reset for " + removeCount + " players (of " + afkCount + " total).");
     }
 
     /** Start scheduler that checks AFK every minute */
@@ -101,14 +133,11 @@ public class AFKManager implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         updateActivity(e.getPlayer());
-        lastStatus.put(e.getPlayer().getUniqueId(), playerStatusManager.getPlayerStatusKey(e.getPlayer()));
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        lastActive.remove(e.getPlayer().getUniqueId());
-        lastStatus.remove(e.getPlayer().getUniqueId());
-        afkPlayers.remove(e.getPlayer().getUniqueId());
+        resetAfk(e.getPlayer());
     }
 
     @EventHandler

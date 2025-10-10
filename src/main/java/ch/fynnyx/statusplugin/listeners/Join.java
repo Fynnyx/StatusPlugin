@@ -27,14 +27,15 @@ public class Join implements Listener {
 
         // Always update their tablist display name
         Status status = playerStatusManager.getPlayerStatus(player);
-        playerStatusManager.updateDisplayName(player, status.getKey());
+        System.out.println("onJoin: " + status);
+        playerStatusManager.updateDisplayName(player, status != null ? status.getKey() : null);
 
         // Show join message if enabled
         if (config.getBoolean("join-leave.enabled", true)) {
             String format = config.getString("join-leave.join-message-format",
                     "%status% &e%username% joined the game.");
 
-            format = format.replace("%status%", status.getColoredName())
+            format = format.replace("%status%", status != null ? status.getColoredName() : "")
                     .replace("%username%", player.getName());
 
             if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

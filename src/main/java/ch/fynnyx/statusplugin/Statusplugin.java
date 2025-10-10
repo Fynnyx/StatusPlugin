@@ -25,6 +25,7 @@ public final class Statusplugin extends JavaPlugin {
     private FileConfiguration config;
     private StatusManager statusManager;
     private PlayerStatusManager playerStatusManager;
+    private AFKManager afkManager;
 
     @Override
     public void onEnable() {
@@ -37,7 +38,7 @@ public final class Statusplugin extends JavaPlugin {
 
         this.playerStatusManager = new PlayerStatusManager(config, statusManager);
 
-        new AFKManager(this, statusManager, playerStatusManager);
+        this.afkManager = new AFKManager(this, statusManager, playerStatusManager);
 
         registerCommands();
         registerListeners();
@@ -49,6 +50,7 @@ public final class Statusplugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        afkManager.resetAllAfk();
         getLogger().info(ChatColor.GOLD + "Statusplugin" + ChatColor.RED + " has been disabled!");
     }
 

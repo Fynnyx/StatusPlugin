@@ -32,7 +32,7 @@ public class Quit implements Listener {
             String format = config.getString("join-leave.leave-message-format",
                     "&e%status% &c%username% left the game.");
 
-            format = format.replace("%status%", status.getColoredName())
+            format = format.replace("%status%", status != null ? status.getColoredName() : "")
                     .replace("%username%", player.getName());
 
             if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

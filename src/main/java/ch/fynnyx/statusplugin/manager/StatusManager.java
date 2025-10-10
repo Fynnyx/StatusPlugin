@@ -63,6 +63,9 @@ public class StatusManager {
      * Finds a status by its config key (case-insensitive).
      */
     public Optional<Status> getByKey(String key) {
+        if (key == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(statuses.get(key.toLowerCase()));
     }
 
